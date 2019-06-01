@@ -18,5 +18,8 @@ jestDobrzeUlozony(G) :-
     assoc_filter_values(GAssoc, graph_node_has_no_e_input, [GAssoc], NodesWithoutInputAssoc),
     assoc_count(NodesWithoutInputAssoc, NodesWithoutInputCount),
     NodesWithoutOutputCount = 1,
-    NodesWithoutInputCount = 1.
+    NodesWithoutInputCount = 1,
+    assoc_next_key(NodesWithoutInputAssoc, GraphSource, _),
+    assoc_next_key(NodesWithoutOutputAssoc, GraphSink, _),
+    graph_exist_e_hamil_path(GAssoc, GraphSource, GraphSink).
 

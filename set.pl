@@ -8,6 +8,9 @@ set_has(L, K) :- assoc_has_key(L, K).
 set_put_all(L, [], L).
 set_put_all(L, [HKeys|TKeys], R) :- set_put(L, HKeys, L1), set_put_all(L1, TKeys, R).
 set_items(L, R) :- assoc_keys(L, R).
+set_eq(A,B) :-
+    set_subset(A, B),
+    set_subset(B, A).
 set_subset(A, B) :-
     set_items(A, ItemsA),
     set_items(B, ItemsB),

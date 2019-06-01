@@ -60,3 +60,6 @@ assoc_map(assoc(L), MapFn, Args, assoc(R)) :- assoc_map_list(L, MapFn, Args, R).
 assoc_fold(assoc(L), FoldFn, Args, Acc, R) :- assoc_fold_list(L, FoldFn, Args, Acc, R).
 assoc_filter(assoc(L), FilterFn, Args, assoc(R)) :- assoc_filter_list(L, FilterFn, Args, R).
 assoc_filter_values(assoc(L), FilterFn, Args, assoc(R)) :- assoc_filter_values_list(L, FilterFn, Args, R).
+
+assoc_next_key(assoc([]), assoc_none, assoc([])).
+assoc_next_key(assoc([[Key,_]|TAssoc]), Key, assoc(TAssoc)).

@@ -2,14 +2,26 @@ ensure_loaded(assoc).
 ensure_loaded(set).
 ensure_loaded(list).
 
+graph_exist_e_hamil_path_rec(CurrentLabel, GAssoc, LabelFrom, CurrentLabel, Trace0) :-
+    set_eq(GAssoc, Trace0).
+graph_exist_e_hamil_path_rec(CurrentLabel, GAssoc, LabelFrom, LabelTo, Trace0) :-
+    \+ set_has(Trace0, CurrentLabel),
+    set_put(Trace0, CurrentLabel, Trace),
+    assoc_get(GAssoc, LabelFrom, NodeFrom),
+    NodeFrom = node(LabelFrom, ENeighbours, _),
+    any(ENeighbours, graph_exist_e_hamil_path_rec, [GAssoc, LabelFrom, LabelTo, Trace]).
+
+graph_exist_e_hamil_path(GAssoc, LabelFrom, LabelTo) :-
+    assoc_has_key(GAssoc, LabelFrom),
+    assoc_has_key(GAssoc, LabelTo),
+    set_new(EmptyTrace),
+    graph_exist_e_hamil_path_rec(LabelFrom, GAssoc, LabelFrom, LabelTo, EmptyTrace).
+
 graph_node_has_no_e_output(node(_, [], _)).
 graph_node_has_no_e_input(node(Label, _, _), GAssoc) :-
     assoc_new(E),
     assoc_fold(GAssoc, graph_fold_get_e_neighbours, [], E, ENeighbours),
-    format("~w~n", ENeighbours),
-    format("~w~n", Label),
-    format("~w~n", set_has(Label, ENeighbours)),
-    \+ set_has(Label, ENeighbours).
+    \+ set_has(ENeighbours, Label).
 
 graph_get_assoc([], GAssoc) :- assoc_new(GAssoc).
 graph_get_assoc([node(Label,N1,N2)|TNodes], GAssoc) :-

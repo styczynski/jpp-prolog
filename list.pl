@@ -9,5 +9,10 @@ filter([HList|TList], FilterFn, Args, R) :-
     Goal =.. [FilterFn,HList|Args],
     \+ call(Goal).
 
+any(L, FilterFn, Args) :-
+    filter(L, FilterFn, Args, Out),
+    proper_length(Out, Len),
+    Len > 0.
+
 unique([]).
 unique([HList|TList]) :- \+ member(HList, TList), unique(TList).
