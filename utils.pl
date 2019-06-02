@@ -60,6 +60,9 @@ graph_node_has_more_than_f_neighbours(node(_, _, N2), MaxFNeighbours) :-
     proper_length(N2, FNeighboursCount),
     FNeighboursCount > MaxFNeighbours.
 
+graph_pair_does_represent_e_edge([node(_, EEdges, _), node(TargetLabel, _, _)]) :-
+    member(TargetLabel, EEdges).
+
 graph_get_assoc([], GAssoc) :- assoc_new(GAssoc).
 graph_get_assoc([node(Label,N1,N2)|TNodes], GAssoc) :-
     graph_get_assoc(TNodes, GAssoc1),
@@ -71,3 +74,12 @@ graph_fold_get_all_neighbours(Key, node(_,N1,N2), Acc, Res) :-
 
 graph_fold_get_e_neighbours(Key, node(_,N1,_), Acc, Res) :-
     set_put_all(Acc, N1, Res).
+
+graph_is_f_route_succ(GAssoc, LabelsList1, LabelsList2) :-
+    map(LabelsList1, graph_map_node_label_to_node, [GAssoc], List1),
+    map(LabelsList2, graph_map_node_label_to_node, [GAssoc], List2),
+    proper_length(LabelsList1, Size1),
+    proper_length(LabelsList2, Size2),
+    Size1 =< Size2,
+    zip(List1, List2, ListZip),
+    all(ListZip, graph_pair_does_represent_e_edge, []).

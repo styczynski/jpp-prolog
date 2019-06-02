@@ -31,3 +31,7 @@ jestDobrzePermutujacy(G) :-
     assoc_filter_values(GAssoc, graph_node_does_not_well_permute, [GAssoc], NodesNotWellPermuting),
     assoc_count(NodesNotWellPermuting, NodesNotWellPermutingCount),
     NodesNotWellPermutingCount = 0.
+
+jestSucc(G, L1, L2) :-
+    graph_get_assoc(G, GAssoc),
+    graph_is_f_route_succ(GAssoc, L1, L2).

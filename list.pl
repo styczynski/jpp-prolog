@@ -41,3 +41,8 @@ product([HAList|TAList],BList, R) :-
     product_single(HAList,BList,R1),
     product(TAList,BList,R2),
     append(R1,R2,R).
+
+zip([], _, []).
+zip([HAList|TAList],[HBList|TBList], R) :-
+    zip(TAList,TBList,R1),
+    R = [[HAList,HBList]|R1].
