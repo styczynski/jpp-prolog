@@ -3,12 +3,23 @@ ensure_loaded(set).
 ensure_loaded(list).
 
 graph_exist_e_hamil_path_rec(CurrentLabel, GAssoc, LabelFrom, CurrentLabel, Trace0) :-
-    set_eq(GAssoc, Trace0).
-graph_exist_e_hamil_path_rec(CurrentLabel, GAssoc, LabelFrom, LabelTo, Trace0) :-
-    \+ set_has(Trace0, CurrentLabel),
+    % format("CHECK FINALIZATION? ~w~n", CurrentLabel),
     set_put(Trace0, CurrentLabel, Trace),
-    assoc_get(GAssoc, LabelFrom, NodeFrom),
-    NodeFrom = node(LabelFrom, ENeighbours, _),
+    assoc_count(GAssoc, GAssocCount),
+    assoc_count(Trace, TraceCount),
+    % format("  | gassoc = ~w~n", GAssocCount),
+    % format("  | trace  = ~w~n", TraceCount),
+    GAssocCount = TraceCount.
+graph_exist_e_hamil_path_rec(CurrentLabel, GAssoc, LabelFrom, LabelTo, Trace0) :-
+    \+ CurrentLabel = LabelTo,
+    \+ set_has(Trace0, CurrentLabel),
+    % format("NOW IN NODE ~w~n", CurrentLabel),
+    % format("  | From = ~w~n", LabelFrom),
+    % format("  | To   = ~w~n", LabelTo),
+    % format("  | Trc  = ~w~n", Trace0),
+    set_put(Trace0, CurrentLabel, Trace),
+    assoc_get(GAssoc, CurrentLabel, NodeCurrent),
+    NodeCurrent = node(CurrentLabel, ENeighbours, _),
     any(ENeighbours, graph_exist_e_hamil_path_rec, [GAssoc, LabelFrom, LabelTo, Trace]).
 
 graph_exist_e_hamil_path(GAssoc, LabelFrom, LabelTo) :-

@@ -18,12 +18,21 @@ jestDobrzeUlozony(G) :-
     assoc_count(NodesWithoutOutputAssoc, NodesWithoutOutputCount),
     assoc_filter_values(GAssoc, graph_node_has_no_e_input, [GAssoc], NodesWithoutInputAssoc),
     assoc_count(NodesWithoutInputAssoc, NodesWithoutInputCount),
+    %format("NodesWithoutOutputCount = ~w~n", NodesWithoutOutputCount),
+    %format("NodesWithoutInputCount = ~w~n", NodesWithoutInputCount),
+
     NodesWithoutOutputCount = 1,
     NodesWithoutInputCount = 1,
     assoc_next_key(NodesWithoutInputAssoc, GraphSource, _),
     assoc_next_key(NodesWithoutOutputAssoc, GraphSink, _),
+    %format("GraphSource = ~w~n", GraphSource),
+    %format("GraphSink = ~w~n", GraphSink),
+
     graph_exist_e_hamil_path(GAssoc, GraphSource, GraphSink),
-    assoc_filter_values(GAssoc, graph_node_has_more_than_f_neighbours, [3], NodesWithMoreThan3FNeighoursCount),
+    assoc_filter_values(GAssoc, graph_node_has_more_than_f_neighbours, [3], NodesWithMoreThan3FNeighours),
+    assoc_count(NodesWithMoreThan3FNeighours, NodesWithMoreThan3FNeighoursCount),
+
+    %format("NodesWithMoreThan3FNeighoursCount = ~w~n", NodesWithMoreThan3FNeighoursCount),
     NodesWithMoreThan3FNeighoursCount = 0.
 
 jestDobrzePermutujacy(G) :-
