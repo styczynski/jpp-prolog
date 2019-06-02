@@ -1,8 +1,4 @@
-[list].
-[assoc].
-[set].
-[utils].
-[efgraphs].
+[ps386038].
 
 %OK
 format("Test1  ~n"), assertion(jestEFGrafem([node(v, [], [])])).

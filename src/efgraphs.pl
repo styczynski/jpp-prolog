@@ -1,7 +1,3 @@
-ensure_loaded(assoc).
-ensure_loaded(set).
-ensure_loaded(utils).
-
 jestEFGrafem(G) :-
     graph_get_assoc(G, GAssoc),
     assoc_new(E),

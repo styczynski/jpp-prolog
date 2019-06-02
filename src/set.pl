@@ -1,5 +1,3 @@
-ensure_loaded(assoc).
-
 set_new(X) :- X = assoc([]).
 set_del(L, K, R) :- assoc_del(L, K, R).
 set_put(L, K, R) :- assoc_put(L, K, K, R).
@@ -18,7 +16,7 @@ set_subset(A, B) :-
 set_from_list(L, R) :-
     set_new(E),
     set_put_all(E, L, R).
-set_subtract(L, R) :-
+set_subtract(A, B, R) :-
     set_new(E),
     set_items(A, ItemsA),
     set_items(B, ItemsB),

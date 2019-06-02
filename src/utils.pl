@@ -1,8 +1,4 @@
-ensure_loaded(assoc).
-ensure_loaded(set).
-ensure_loaded(list).
-
-graph_exist_e_hamil_path_rec(CurrentLabel, GAssoc, LabelFrom, CurrentLabel, Trace0) :-
+graph_exist_e_hamil_path_rec(CurrentLabel, GAssoc, _, CurrentLabel, Trace0) :-
     % format("CHECK FINALIZATION? ~w~n", CurrentLabel),
     set_put(Trace0, CurrentLabel, Trace),
     assoc_count(GAssoc, GAssocCount),
@@ -45,7 +41,7 @@ graph_node_ef_edges_pair_does_not_well_permute_out([ELabel, FLabel], GAssoc) :-
     proper_length(Intersect, IntersectCount),
     IntersectCount = 0.
 
-graph_node_ef_edges_pair_does_not_well_permute_in([ELabel, FLabel], GAssoc) :-
+graph_node_ef_edges_pair_does_not_well_permute_in([ELabel, _], GAssoc) :-
     assoc_get(GAssoc, ELabel, NodeE),
     NodeE = node(ELabel, _, NodeENeigboursFLabels),
     map(NodeENeigboursFLabels, graph_map_node_label_to_node, [GAssoc], NodeENeigboursF),
@@ -79,11 +75,11 @@ graph_get_assoc([node(Label,N1,N2)|TNodes], GAssoc) :-
     graph_get_assoc(TNodes, GAssoc1),
     assoc_put(GAssoc1, Label, node(Label,N1,N2), GAssoc).
 
-graph_fold_get_all_neighbours(Key, node(_,N1,N2), Acc, Res) :-
+graph_fold_get_all_neighbours(_, node(_,N1,N2), Acc, Res) :-
     set_put_all(Acc, N1, Acc1),
     set_put_all(Acc1, N2, Res).
 
-graph_fold_get_e_neighbours(Key, node(_,N1,_), Acc, Res) :-
+graph_fold_get_e_neighbours(_, node(_,N1,_), Acc, Res) :-
     set_put_all(Acc, N1, Res).
 
 graph_is_f_route_succ(GAssoc, LabelsList1, LabelsList2) :-

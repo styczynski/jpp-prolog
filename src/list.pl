@@ -30,7 +30,7 @@ map([Item|TList], MapFn, Args, [RItem|TRList]) :-
 unique([]).
 unique([HList|TList]) :- \+ member(HList, TList), unique(TList).
 
-product_single(Item, [], []).
+product_single(_, [], []).
 product_single(Item, [HBList|TBList], R) :-
     product_single(Item,TBList,R1),
     R = [[Item,HBList]|R1].

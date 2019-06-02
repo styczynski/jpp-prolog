@@ -1,5 +1,3 @@
-ensure_loaded(list).
-
 assoc_new(X) :- X = assoc([]).
 
 assoc_del_list([], _, RAssoc) :- RAssoc = [].
