@@ -1,3 +1,15 @@
+/**
+ * <module> EF-Graphs library module
+ *
+ * This module contains main definitions to work with EF-Graphs.
+ *
+ * @author Piotr Styczynski
+ * @license MIT
+ */
+
+/*
+ * Checks if the graph G is a valid representation of EF-Graph
+ */
 jestEFGrafem(G) :-
     graph_get_assoc(G, GAssoc),
     assoc_new(E),
@@ -7,6 +19,9 @@ jestEFGrafem(G) :-
     set_from_list(NodeLabelsList, NodeLabelsSet),
     set_subset(NeighboursAssoc, NodeLabelsSet).
 
+/*
+ * Checks if the graph G is well-layouted
+ */
 jestDobrzeUlozony(G) :-
     jestEFGrafem(G),
     graph_get_assoc(G, GAssoc),
@@ -31,12 +46,18 @@ jestDobrzeUlozony(G) :-
     %format("NodesWithMoreThan3FNeighoursCount = ~w~n", NodesWithMoreThan3FNeighoursCount),
     NodesWithMoreThan3FNeighoursCount = 0.
 
+/*
+ * Checks if the graph G is well-permuting
+ */
 jestDobrzePermutujacy(G) :-
     graph_get_assoc(G, GAssoc),
     assoc_filter_values(GAssoc, graph_node_does_not_well_permute, [GAssoc], NodesNotWellPermuting),
     assoc_count(NodesNotWellPermuting, NodesNotWellPermutingCount),
     NodesNotWellPermutingCount = 0.
 
+/*
+ * Checks if the F-route L2 is successor of F-route L1
+ */
 jestSucc(G, L1, L2) :-
     graph_get_assoc(G, GAssoc),
     graph_is_f_route_succ(GAssoc, L1, L2).
