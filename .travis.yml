@@ -1,4 +1,4 @@
-language: bash
+language: php
 
 before_script:
   - sudo apt-add-repository ppa:swi-prolog/devel -y
@@ -8,4 +8,3 @@ before_script:
 script:
   - make all
   - make test
-
