@@ -3,6 +3,12 @@
  * I used there self-made higher order function to easier handle generic graphs processing.
  * It can be easily changed into normal non-hof definitions.
  *
+ * Note:
+ *   - I do not know whats about 59-63 Tests theyre clearly invalid.
+ *   - Test 77 is well-layouted graph
+ *   - Tests 83-86 are invalid too? idk
+ *
+ *
  * Piotr Styczynski 2019, MIM UW (JPP)
  * @license MIT
  */
@@ -471,19 +477,33 @@ set_subtract(A, B, R) :-
  * @license MIT
  */
 
-/* TODO */
-graph_map_make_node_complete_e(node(Label, ENodes, FNodes), CompleteNode, G) :-
-   filter(G, graph_node_has_e_edge_to, [Label], NodesWithEEdgeToThis),
-   graph_get_assoc(NodesWithEEdgeToThis, NodesWithEEdgeToThisAssoc),
-   assoc_keys(NodesWithEEdgeToThisAssoc, NodesWithEEdgeToThisLabels),
-   insert_if_not_present(ENodes, NodesWithEEdgeToThisLabels, ENodes2),
-   CompleteNode = node(Label, ENodes2, FNodes).
-
-complete_g(G, CompleteG) :-
-   map(G, graph_map_make_node_complete_e, [G], CompleteG).
+/*
+ * Completes assymeric F-edges on graph returning new EF-graph representation
+ * i.e. if theres edge <A,B> in F there must be edge <B,A> in F.
+ *
+ * @param N - Input node to complete its connections on F edges
+ * @param C - Output completed node
+ * @param G - Input graph (ordinary non-assoc representation)
+ */
+graph_map_make_node_complete_f(node(Label, ENodes, FNodes), CompleteNode, G) :-
+   filter(G, graph_node_has_f_edge_to, [Label], NodesWithFEdgeToThis),
+   graph_get_assoc(NodesWithFEdgeToThis, NodesWithFEdgeToThisAssoc),
+   assoc_keys(NodesWithFEdgeToThisAssoc, NodesWithFEdgeToThisLabels),
+   insert_if_not_present(FNodes, NodesWithFEdgeToThisLabels, FNodes2),
+   CompleteNode = node(Label, ENodes, FNodes2).
 
 /*
- * Recursive helper to check for existence of Hamiltonian path on E-edges.
+ * Completes assymeric F-edges on graph returning new EF-graph representation
+ * i.e. if theres edge <A,B> in F there must be edge <B,A> in F.
+ *
+ * @param G - Input non-assoc graph representation
+ * @param C - Output completed graph representation
+ */
+complete_g(G, CompleteG) :-
+   map(G, graph_map_make_node_complete_f, [G], CompleteG).
+
+/*
+ * Recursive helper to check for existence of Euler path on E-edges.
  *
  * @param CurrentLabel - current node label (during graph traversal)
  * @param GAssoc - Input graph G
@@ -491,7 +511,7 @@ complete_g(G, CompleteG) :-
  * @param LabelTo - end of the Hamiltonian path
  * @param Trace0 - set of currently accessed node labels
  */
-graph_exist_e_hamil_path_rec(CurrentLabel, ParentLabel, GAssoc, _, CurrentLabel, Trace0, Trace0N) :-
+graph_exist_e_euler_path_rec(CurrentLabel, ParentLabel, GAssoc, _, CurrentLabel, Trace0, Trace0N) :-
     % format("CHECK FINALIZATION? ~w~n", CurrentLabel),
     set_put(Trace0, [ParentLabel, CurrentLabel], Trace),
     set_put(Trace0N, CurrentLabel, TraceN),
@@ -500,7 +520,7 @@ graph_exist_e_hamil_path_rec(CurrentLabel, ParentLabel, GAssoc, _, CurrentLabel,
     % format("  | gassoc = ~w~n", GAssocCount),
     % format("  | trace  = ~w~n", TraceNCount),
     GAssocCount = TraceNCount.
-graph_exist_e_hamil_path_rec(CurrentLabel, ParentLabel, GAssoc, LabelFrom, LabelTo, Trace0, Trace0N) :-
+graph_exist_e_euler_path_rec(CurrentLabel, ParentLabel, GAssoc, LabelFrom, LabelTo, Trace0, Trace0N) :-
     \+ CurrentLabel = LabelTo,
     \+ set_has(Trace0, [ParentLabel, CurrentLabel]),
     % format("NOW IN NODE ~w~n", CurrentLabel),
@@ -511,21 +531,21 @@ graph_exist_e_hamil_path_rec(CurrentLabel, ParentLabel, GAssoc, LabelFrom, Label
     set_put(Trace0N, CurrentLabel, TraceN),
     assoc_get(GAssoc, CurrentLabel, NodeCurrent),
     NodeCurrent = node(CurrentLabel, ENeighbours, _),
-    any(ENeighbours, graph_exist_e_hamil_path_rec, [CurrentLabel, GAssoc, LabelFrom, LabelTo, Trace, TraceN]).
+    any(ENeighbours, graph_exist_e_euler_path_rec, [CurrentLabel, GAssoc, LabelFrom, LabelTo, Trace, TraceN]).
 
 /*
- * Checks for existence of Hamiltonian path on E-edges from
+ * Checks for existence of Euler path on E-edges from
  * node with label LabelFrom to node with label LabelTo in graph GAssoc.
  *
  * @param GAssoc - Input graph G
  * @param LabelFrom - start of the Hamiltonian path
  * @param LabelTo - end of the Hamiltonian path
  */
-graph_exist_e_hamil_path(GAssoc, LabelFrom, LabelTo) :-
+graph_exist_e_euler_path(GAssoc, LabelFrom, LabelTo) :-
     assoc_has_key(GAssoc, LabelFrom),
     assoc_has_key(GAssoc, LabelTo),
     set_new(EmptyTrace),
-    graph_exist_e_hamil_path_rec(LabelFrom, traceRoot0, GAssoc, LabelFrom, LabelTo, EmptyTrace, EmptyTrace).
+    graph_exist_e_euler_path_rec(LabelFrom, traceRoot0, GAssoc, LabelFrom, LabelTo, EmptyTrace, EmptyTrace).
 
 /*
  * Checks if the given node have no output E-edges.
@@ -592,7 +612,12 @@ graph_node_does_not_well_permute(node(Label, N1, N2), GAssoc) :-
     product(NodesWithEEdgeThere, N2, EFPairs2),
     all(EFPairs2, graph_node_ef_edges_pair_does_not_well_permute_in, [GAssoc]).
 
-/* TODO */
+/*
+ * Maps node to its label
+ *
+ * @param N - input node
+ * @param L - output label of that node
+ */
 graph_map_node_assoc_to_node_label(node(Label,_,_), Label).
 
 /*
@@ -604,6 +629,16 @@ graph_map_node_assoc_to_node_label(node(Label,_,_), Label).
  */
 graph_map_node_label_to_node(NodeLabel, Node, GAssoc) :-
     assoc_get(GAssoc, NodeLabel, Node).
+
+/*
+ * Checks if node has an F-edge to other node i.e if theres F-edge <N,T>.
+ *
+ * @param L - Input node
+ * @param T - Input node
+ */
+graph_node_has_f_edge_to(node(_, _, N2), TargetLabel) :-
+    member(TargetLabel, N2).
+
 
 /*
  * Checks if node has an E-edge to other node i.e if theres E-edge <N,T>.
@@ -695,7 +730,8 @@ graph_is_f_route_succ(GAssoc, LabelsList1, LabelsList2) :-
 /*
  * Checks if the graph G is a valid representation of EF-Graph
  */
-jestEFGrafem(G) :-
+jestEFGrafem_G0(G0, G, GAssoc) :-
+    complete_g(G0, G),
     graph_get_assoc(G, GAssoc),
     assoc_new(E),
     assoc_fold(GAssoc, graph_fold_get_all_neighbours, [], E, NeighboursAssoc),
@@ -706,11 +742,16 @@ jestEFGrafem(G) :-
     set_subset(NeighboursAssoc, NodeLabelsSet).
 
 /*
+ * Checks if the graph G is a valid representation of EF-Graph
+ */
+jestEFGrafem(G0) :-
+    jestEFGrafem_G0(G0, _, _).
+
+/*
  * Checks if the graph G is well-layouted
  */
-jestDobrzeUlozony(G) :-
-    jestEFGrafem(G),
-    graph_get_assoc(G, GAssoc),
+jestDobrzeUlozony(G0) :-
+    jestEFGrafem_G0(G0, G, GAssoc),
     assoc_filter_values(GAssoc, graph_node_has_no_e_output, [], NodesWithoutOutputAssoc),
     assoc_count(NodesWithoutOutputAssoc, NodesWithoutOutputCount),
     assoc_filter_values(GAssoc, graph_node_has_no_e_input, [GAssoc], NodesWithoutInputAssoc),
@@ -725,7 +766,7 @@ jestDobrzeUlozony(G) :-
     %format("GraphSource = ~w~n", GraphSource),
     %format("GraphSink = ~w~n", GraphSink),
 
-    graph_exist_e_hamil_path(GAssoc, GraphSource, GraphSink),
+    graph_exist_e_euler_path(GAssoc, GraphSource, GraphSink),
     assoc_filter_values(GAssoc, graph_node_has_more_than_f_neighbours, [3], NodesWithMoreThan3FNeighours),
     assoc_count(NodesWithMoreThan3FNeighours, NodesWithMoreThan3FNeighoursCount),
 
@@ -735,8 +776,8 @@ jestDobrzeUlozony(G) :-
 /*
  * Checks if the graph G is well-permuting
  */
-jestDobrzePermutujacy(G) :-
-    graph_get_assoc(G, GAssoc),
+jestDobrzePermutujacy(G0) :-
+    jestEFGrafem_G0(G0, G, GAssoc),
     assoc_filter_values(GAssoc, graph_node_does_not_well_permute, [GAssoc], NodesNotWellPermuting),
     assoc_count(NodesNotWellPermuting, NodesNotWellPermutingCount),
     NodesNotWellPermutingCount = 0.
@@ -744,6 +785,6 @@ jestDobrzePermutujacy(G) :-
 /*
  * Checks if the F-route L2 is successor of F-route L1
  */
-jestSucc(G, L1, L2) :-
-    graph_get_assoc(G, GAssoc),
+jestSucc(G0, L1, L2) :-
+    jestEFGrafem_G0(G0, G, GAssoc),
     graph_is_f_route_succ(GAssoc, L1, L2).
