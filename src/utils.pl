@@ -115,6 +115,9 @@ graph_node_does_not_well_permute(node(Label, N1, N2), GAssoc) :-
     product(NodesWithEEdgeThere, N2, EFPairs2),
     all(EFPairs2, graph_node_ef_edges_pair_does_not_well_permute_in, [GAssoc]).
 
+/* TODO */
+graph_map_node_assoc_to_node_label(node(Label,_,_), Label).
+
 /*
  * Maps node label to nide itself
  *

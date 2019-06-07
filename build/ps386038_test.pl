@@ -72,8 +72,8 @@ format("Test58 ~n"), assertion(\+ jestEFGrafem([node(v4164, [], [v4186]), node(v
 
 %format("Test63 ~n"), assertion(\+ jestEFGrafem([node(v704, [], []), node(v718, [v718, v718], [v704, v718])])).
 
-%format("Test64 ~n"), assertion(\+ jestEFGrafem([node(v704, [], []), node(v704, [], []),node(v718, [v718, v718], [v704, v718])])).
-%format("Test65 ~n"), assertion(\+ jestEFGrafem([node(v704, [], []), node(v718, [v718, v718], [v704, v718]),node(v718, [v718, v718], [v704, v718])])).
+format("Test64 ~n"), assertion(\+ jestEFGrafem([node(v704, [], []), node(v704, [], []),node(v718, [v718, v718], [v704, v718])])).
+format("Test65 ~n"), assertion(\+ jestEFGrafem([node(v704, [], []), node(v718, [v718, v718], [v704, v718]),node(v718, [v718, v718], [v704, v718])])).
 
 %OK
 format("Test66 ~n"), assertion(jestDobrzeUlozony([node(v1926, [], []), node(v1940, [v1926, v1926],[])])).
@@ -123,4 +123,3 @@ format("Test96 ~n"), assertion(\+ jestSucc([node(v984, [v998], [v998]), node(v99
 format("Test97 ~n"), assertion(\+ jestSucc([node(v984, [v998], [v998]), node(v998, [v1012], [v1012]), node(v1012, [v1026], [v1026]),node(v1026, [], [v1012])],[v984,v998,v1012],[])).
 format("Test98 ~n"), assertion(\+ jestSucc([node(v984, [v998], [v998]), node(v998, [v1012], [v1012]), node(v1012, [v1026], [v1026]),node(v1026, [], [v1012])],[v984,v1012,v998],[v998,v1012,v1026])).
 format("Test99 ~n"), assertion(\+ jestSucc([node(v984, [v998], [v998]), node(v998, [v1012], [v1012]), node(v1012, [v1026], [v1026]),node(v1026, [], [v1012])],[v984,v998,v1012],[v998,v1026,v1012])).
-

@@ -15,7 +15,8 @@ jestEFGrafem(G) :-
     assoc_new(E),
     assoc_fold(GAssoc, graph_fold_get_all_neighbours, [], E, NeighboursAssoc),
     assoc_keys(GAssoc, NodeLabelsList),
-    unique(NodeLabelsList),
+    map(G, graph_map_node_assoc_to_node_label, [], NodeLabelsListFull),
+    unique(NodeLabelsListFull),
     set_from_list(NodeLabelsList, NodeLabelsSet),
     set_subset(NeighboursAssoc, NodeLabelsSet).
 

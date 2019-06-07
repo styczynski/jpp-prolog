@@ -558,6 +558,9 @@ graph_node_does_not_well_permute(node(Label, N1, N2), GAssoc) :-
     product(NodesWithEEdgeThere, N2, EFPairs2),
     all(EFPairs2, graph_node_ef_edges_pair_does_not_well_permute_in, [GAssoc]).
 
+/* TODO */
+graph_map_node_assoc_to_node_label(node(Label,_,_), Label).
+
 /*
  * Maps node label to nide itself
  *
@@ -646,7 +649,6 @@ graph_is_f_route_succ(GAssoc, LabelsList1, LabelsList2) :-
     Size1 =< Size2,
     zip(List1, List2, ListZip),
     all(ListZip, graph_pair_does_represent_e_edge, []).
-
 /**
  * <module> EF-Graphs library module
  *
@@ -664,7 +666,8 @@ jestEFGrafem(G) :-
     assoc_new(E),
     assoc_fold(GAssoc, graph_fold_get_all_neighbours, [], E, NeighboursAssoc),
     assoc_keys(GAssoc, NodeLabelsList),
-    unique(NodeLabelsList),
+    map(G, graph_map_node_assoc_to_node_label, [], NodeLabelsListFull),
+    unique(NodeLabelsListFull),
     set_from_list(NodeLabelsList, NodeLabelsSet),
     set_subset(NeighboursAssoc, NodeLabelsSet).
 
