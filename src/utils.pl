@@ -7,6 +7,17 @@
  * @license MIT
  */
 
+/* TODO */
+graph_map_make_node_complete_e(node(Label, ENodes, FNodes), CompleteNode, G) :-
+   filter(G, graph_node_has_e_edge_to, [Label], NodesWithEEdgeToThis),
+   graph_get_assoc(NodesWithEEdgeToThis, NodesWithEEdgeToThisAssoc),
+   assoc_keys(NodesWithEEdgeToThisAssoc, NodesWithEEdgeToThisLabels),
+   insert_if_not_present(ENodes, NodesWithEEdgeToThisLabels, ENodes2),
+   CompleteNode = node(Label, ENodes2, FNodes).
+
+complete_g(G, CompleteG) :-
+   map(G, graph_map_make_node_complete_e, [G], CompleteG).
+
 /*
  * Recursive helper to check for existence of Hamiltonian path on E-edges.
  *
@@ -16,25 +27,27 @@
  * @param LabelTo - end of the Hamiltonian path
  * @param Trace0 - set of currently accessed node labels
  */
-graph_exist_e_hamil_path_rec(CurrentLabel, GAssoc, _, CurrentLabel, Trace0) :-
+graph_exist_e_hamil_path_rec(CurrentLabel, ParentLabel, GAssoc, _, CurrentLabel, Trace0, Trace0N) :-
     % format("CHECK FINALIZATION? ~w~n", CurrentLabel),
-    set_put(Trace0, CurrentLabel, Trace),
+    set_put(Trace0, [ParentLabel, CurrentLabel], Trace),
+    set_put(Trace0N, CurrentLabel, TraceN),
     assoc_count(GAssoc, GAssocCount),
-    assoc_count(Trace, TraceCount),
+    assoc_count(TraceN, TraceNCount),
     % format("  | gassoc = ~w~n", GAssocCount),
-    % format("  | trace  = ~w~n", TraceCount),
-    GAssocCount = TraceCount.
-graph_exist_e_hamil_path_rec(CurrentLabel, GAssoc, LabelFrom, LabelTo, Trace0) :-
+    % format("  | trace  = ~w~n", TraceNCount),
+    GAssocCount = TraceNCount.
+graph_exist_e_hamil_path_rec(CurrentLabel, ParentLabel, GAssoc, LabelFrom, LabelTo, Trace0, Trace0N) :-
     \+ CurrentLabel = LabelTo,
-    \+ set_has(Trace0, CurrentLabel),
+    \+ set_has(Trace0, [ParentLabel, CurrentLabel]),
     % format("NOW IN NODE ~w~n", CurrentLabel),
     % format("  | From = ~w~n", LabelFrom),
     % format("  | To   = ~w~n", LabelTo),
-    % format("  | Trc  = ~w~n", Trace0),
-    set_put(Trace0, CurrentLabel, Trace),
+    % print(TraceN),
+    set_put(Trace0, [ParentLabel, CurrentLabel], Trace),
+    set_put(Trace0N, CurrentLabel, TraceN),
     assoc_get(GAssoc, CurrentLabel, NodeCurrent),
     NodeCurrent = node(CurrentLabel, ENeighbours, _),
-    any(ENeighbours, graph_exist_e_hamil_path_rec, [GAssoc, LabelFrom, LabelTo, Trace]).
+    any(ENeighbours, graph_exist_e_hamil_path_rec, [CurrentLabel, GAssoc, LabelFrom, LabelTo, Trace, TraceN]).
 
 /*
  * Checks for existence of Hamiltonian path on E-edges from
@@ -48,7 +61,7 @@ graph_exist_e_hamil_path(GAssoc, LabelFrom, LabelTo) :-
     assoc_has_key(GAssoc, LabelFrom),
     assoc_has_key(GAssoc, LabelTo),
     set_new(EmptyTrace),
-    graph_exist_e_hamil_path_rec(LabelFrom, GAssoc, LabelFrom, LabelTo, EmptyTrace).
+    graph_exist_e_hamil_path_rec(LabelFrom, traceRoot0, GAssoc, LabelFrom, LabelTo, EmptyTrace, EmptyTrace).
 
 /*
  * Checks if the given node have no output E-edges.

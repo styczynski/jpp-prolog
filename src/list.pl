@@ -130,3 +130,24 @@ zip([], _, []).
 zip([HAList|TAList],[HBList|TBList], R) :-
     zip(TAList,TBList,R1),
     R = [[HAList,HBList]|R1].
+
+insert_if_not_present([], Src, Src).
+insert_if_not_present(Dest, [], Dest).
+insert_if_not_present(Dest, [Elem], R) :-
+    (
+        \+ member(Elem, Dest),
+        R = [Elem|Dest]
+    ) ; (
+        member(Elem, Dest),
+        R = Dest
+    ).
+insert_if_not_present(Dest, [HList|TList], R) :-
+    (
+        insert_if_not_present(Dest, TList, R1),
+        \+ member(HList, R1),
+        R = [HList|R1]
+    ) ; (
+        insert_if_not_present(Dest, TList, R1),
+        member(HList, R1),
+        R = R1
+    ).
